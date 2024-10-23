@@ -29,24 +29,14 @@ export const handler: Handler = async () => {
       { scope: ['tweet.read', 'tweet.write', 'users.read'] }
     );
 
-    // Simplificamos las opciones de cookie eliminando Domain
-    const cookieOptions = [
-      'HttpOnly',
-      'Secure',
-      'SameSite=Lax',
-      'Path=/',
-      'Max-Age=3600'
-    ].join('; ');
+    const cookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600';
 
     return {
       statusCode: 302,
       headers: {
         'Location': url,
         'Cache-Control': 'no-cache',
-        'Set-Cookie': [
-          `twitter_oauth_state=${state}; ${cookieOptions}`,
-          `twitter_oauth_code_verifier=${codeVerifier}; ${cookieOptions}`
-        ]
+        'Set-Cookie': `twitter_oauth_state=${state}; ${cookieOptions}, twitter_oauth_code_verifier=${codeVerifier}; ${cookieOptions}`
       }
     };
   } catch (error) {

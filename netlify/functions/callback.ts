@@ -53,27 +53,14 @@ const handler: Handler = async (event) => {
       redirectUri: `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/callback`
     });
 
-    // Simplificamos las opciones de cookie eliminando Domain
-    const cookieOptions = [
-      'HttpOnly',
-      'Secure',
-      'SameSite=Lax',
-      'Path=/',
-      'Max-Age=86400'
-    ].join('; ');
-
-    const clearCookieOptions = 'Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax';
+    const cookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400';
+    const clearCookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
     return {
       statusCode: 302,
       headers: {
         'Location': '/',
-        'Set-Cookie': [
-          `twitter_access_token=${accessToken}; ${cookieOptions}`,
-          `twitter_refresh_token=${refreshToken}; ${cookieOptions}`,
-          `twitter_oauth_state=; ${clearCookieOptions}`,
-          `twitter_oauth_code_verifier=; ${clearCookieOptions}`
-        ]
+        'Set-Cookie': `twitter_access_token=${accessToken}; ${cookieOptions}, twitter_refresh_token=${refreshToken}; ${cookieOptions}, twitter_oauth_state=; ${clearCookieOptions}, twitter_oauth_code_verifier=; ${clearCookieOptions}`
       }
     };
   } catch (error) {
