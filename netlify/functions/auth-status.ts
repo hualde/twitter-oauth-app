@@ -7,7 +7,7 @@ export const handler: Handler = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify({
-      authenticated: !!cookies.twitter_access_token
-    }),
+      authenticated: !!cookies.twitter_session
+    })
   };
 };

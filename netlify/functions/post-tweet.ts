@@ -8,12 +8,12 @@ export const handler: Handler = async (event) => {
   }
 
   const cookies = cookie.parse(event.headers.cookie || '');
-  const accessToken = cookies.twitter_access_token;
+  const accessToken = cookies.twitter_session;
 
   if (!accessToken) {
     return {
       statusCode: 401,
-      body: JSON.stringify({ error: 'Unauthorized' }),
+      body: JSON.stringify({ error: 'Unauthorized' })
     };
   }
 
@@ -25,13 +25,12 @@ export const handler: Handler = async (event) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true }),
+      body: JSON.stringify({ success: true })
     };
   } catch (error) {
-    console.error('Error posting tweet:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to post tweet' }),
+      body: JSON.stringify({ error: 'Failed to post tweet' })
     };
   }
 };
