@@ -29,7 +29,6 @@ export const handler: Handler = async () => {
       { scope: ['tweet.read', 'tweet.write', 'users.read'] }
     );
 
-    // Configurar cookies con un dominio específico
     const domain = process.env.URL ? new URL(process.env.URL).hostname : 'localhost';
     const cookieOptions = [
       'HttpOnly',
@@ -43,12 +42,9 @@ export const handler: Handler = async () => {
     return {
       statusCode: 302,
       headers: {
-        'Set-Cookie': [
-          `twitter_oauth_state=${state}; ${cookieOptions}`,
-          `twitter_oauth_code_verifier=${codeVerifier}; ${cookieOptions}`
-        ],
         'Location': url,
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
+        'Set-Cookie': `twitter_oauth_state=${state}; ${cookieOptions}, twitter_oauth_code_verifier=${codeVerifier}; ${cookieOptions}`
       }
     };
   } catch (error) {

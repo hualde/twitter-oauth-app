@@ -8,14 +8,6 @@ const handler: Handler = async (event) => {
   const storedState = cookies.twitter_oauth_state;
   const codeVerifier = cookies.twitter_oauth_code_verifier;
 
-  console.log('Callback received:', {
-    hasCode: !!code,
-    hasState: !!state,
-    hasStoredState: !!storedState,
-    hasCodeVerifier: !!codeVerifier,
-    stateMatch: state === storedState
-  });
-
   if (!code || !state) {
     return {
       statusCode: 400,
@@ -49,7 +41,6 @@ const handler: Handler = async (event) => {
       redirectUri: `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/callback`
     });
 
-    // Configurar cookies con el dominio correcto
     const domain = process.env.URL ? new URL(process.env.URL).hostname : 'localhost';
     const cookieOptions = [
       'HttpOnly',
@@ -60,17 +51,11 @@ const handler: Handler = async (event) => {
       'Max-Age=86400'
     ].join('; ');
 
-    // Limpiar las cookies de autenticación y establecer los tokens
     return {
       statusCode: 302,
       headers: {
         'Location': '/',
-        'Set-Cookie': [
-          `twitter_access_token=${accessToken}; ${cookieOptions}`,
-          `twitter_refresh_token=${refreshToken}; ${cookieOptions}`,
-          `twitter_oauth_state=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
-          `twitter_oauth_code_verifier=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
-        ]
+        'Set-Cookie': `twitter_access_token=${accessToken}; ${cookieOptions}, twitter_refresh_token=${refreshToken}; ${cookieOptions}, twitter_oauth_state=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT, twitter_oauth_code_verifier=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
       }
     };
   } catch (error) {
