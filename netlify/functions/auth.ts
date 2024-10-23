@@ -29,14 +29,21 @@ export const handler: Handler = async () => {
       { scope: ['tweet.read', 'tweet.write', 'users.read'] }
     );
 
-    const cookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600';
-
     return {
       statusCode: 302,
       headers: {
         'Location': url,
         'Cache-Control': 'no-cache',
-        'Set-Cookie': `twitter_oauth_state=${state}; ${cookieOptions}, twitter_oauth_code_verifier=${codeVerifier}; ${cookieOptions}`
+        'Set-Cookie': [
+          `twitter_oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600`,
+          `twitter_oauth_code_verifier=${codeVerifier}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600`
+        ]
+      },
+      multiValueHeaders: {
+        'Set-Cookie': [
+          `twitter_oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600`,
+          `twitter_oauth_code_verifier=${codeVerifier}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600`
+        ]
       }
     };
   } catch (error) {

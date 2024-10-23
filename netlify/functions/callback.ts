@@ -28,7 +28,8 @@ const handler: Handler = async (event) => {
         debug: {
           hasCookie: !!event.headers.cookie,
           storedState: !!storedState,
-          codeVerifier: !!codeVerifier
+          codeVerifier: !!codeVerifier,
+          cookies: cookies
         }
       })
     };
@@ -53,14 +54,24 @@ const handler: Handler = async (event) => {
       redirectUri: `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/callback`
     });
 
-    const cookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400';
-    const clearCookieOptions = 'HttpOnly; Secure; SameSite=Lax; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-
     return {
       statusCode: 302,
       headers: {
         'Location': '/',
-        'Set-Cookie': `twitter_access_token=${accessToken}; ${cookieOptions}, twitter_refresh_token=${refreshToken}; ${cookieOptions}, twitter_oauth_state=; ${clearCookieOptions}, twitter_oauth_code_verifier=; ${clearCookieOptions}`
+        'Set-Cookie': [
+          `twitter_access_token=${accessToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400`,
+          `twitter_refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400`,
+          'twitter_oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+          'twitter_oauth_code_verifier=; HttpOnly; Secure; SameSite=Lax; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
+        ]
+      },
+      multiValueHeaders: {
+        'Set-Cookie': [
+          `twitter_access_token=${accessToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400`,
+          `twitter_refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400`,
+          'twitter_oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+          'twitter_oauth_code_verifier=; HttpOnly; Secure; SameSite=Lax; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
+        ]
       }
     };
   } catch (error) {
