@@ -1,7 +1,7 @@
 import { Handler } from '@netlify/functions';
 import { TwitterApi } from 'twitter-api-v2';
 
-const handler: Handler = async () => {
+export const handler: Handler = async () => {
   const clientId = process.env.TWITTER_CLIENT_ID;
   const clientSecret = process.env.TWITTER_CLIENT_SECRET;
   const baseUrl = process.env.URL || 'http://localhost:8888';
