@@ -16,9 +16,21 @@ const handler: Handler = async (event) => {
   }
 
   if (!storedState || !codeVerifier) {
+    console.error('Missing cookies:', { 
+      hasCookie: !!event.headers.cookie,
+      cookieHeader: event.headers.cookie,
+      parsedCookies: cookies 
+    });
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Missing authentication cookies' })
+      body: JSON.stringify({ 
+        error: 'Missing authentication cookies',
+        debug: {
+          hasCookie: !!event.headers.cookie,
+          storedState: !!storedState,
+          codeVerifier: !!codeVerifier
+        }
+      })
     };
   }
 
@@ -41,21 +53,27 @@ const handler: Handler = async (event) => {
       redirectUri: `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/callback`
     });
 
-    const domain = process.env.URL ? new URL(process.env.URL).hostname : 'localhost';
+    // Simplificamos las opciones de cookie eliminando Domain
     const cookieOptions = [
       'HttpOnly',
       'Secure',
       'SameSite=Lax',
-      `Domain=${domain}`,
       'Path=/',
       'Max-Age=86400'
     ].join('; ');
+
+    const clearCookieOptions = 'Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax';
 
     return {
       statusCode: 302,
       headers: {
         'Location': '/',
-        'Set-Cookie': `twitter_access_token=${accessToken}; ${cookieOptions}, twitter_refresh_token=${refreshToken}; ${cookieOptions}, twitter_oauth_state=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT, twitter_oauth_code_verifier=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+        'Set-Cookie': [
+          `twitter_access_token=${accessToken}; ${cookieOptions}`,
+          `twitter_refresh_token=${refreshToken}; ${cookieOptions}`,
+          `twitter_oauth_state=; ${clearCookieOptions}`,
+          `twitter_oauth_code_verifier=; ${clearCookieOptions}`
+        ]
       }
     };
   } catch (error) {
