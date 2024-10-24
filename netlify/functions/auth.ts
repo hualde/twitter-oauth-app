@@ -21,7 +21,7 @@ export const handler: Handler = async () => {
       { scope: ['tweet.read', 'tweet.write', 'users.read'] }
     );
 
-    // Simplificado: una sola cookie con los datos JSON
+    // Simplificado: una sola cookie con los datos JSON a
     const cookieData = JSON.stringify({ state, codeVerifier });
     
     return {
